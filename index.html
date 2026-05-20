@@ -46,7 +46,7 @@
             font-size: 14px;
             text-align: center;
             max-width: 540px;
-            margin: 0 0 30px 0;
+            margin: 0 0 20px 0;
             line-height: 1.4;
             animation: fadeInUp 3.0s ease forwards;
         }
@@ -62,6 +62,17 @@
             box-shadow: 0 20px 40px rgba(60, 60, 60, 0.5);
             box-sizing: border-box;
             animation: fadeIn 1.0s ease forwards;
+        }
+        
+        .line-holder {
+            background-color: rgba(255, 255, 255, 0.4);
+            min-height: 1px;
+            padding: 0px;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
         }
 
         .input-group {
@@ -266,7 +277,7 @@
         }
 
         #output-container {
-            min-height: 160px;
+            min-height: 240px;
             max-height: 240px;
             overflow-y: auto;
             display: flex;
@@ -375,10 +386,46 @@
 
         .footer-text {
             margin-top: 80px;
+            margin-bottom: 20px;
             font-size: 12px;
             font-family: monospace;
             color: #334155;
             text-align: center;
+        }
+        
+        .info-box {
+            background-color: #0f1422;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin-top: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(60, 60, 60, 0.1);
+            box-sizing: border-box;
+            animation: fadeIn 1.0s ease forwards;
+            transition: transform 0.3s ease, border 0.2s ease, box-shadow 0.4s ease;
+        }
+        .info-box:hover { 
+          transform: scale(1.01);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 20px 40px rgba(60, 60, 60, 0.5);
+        }
+        
+        .info-title-text {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-size: 22px;
+            color: #fff;
+            text-align: left;
+        }
+        
+        .info-description-text {
+            margin-top: 5px;
+            margin-bottom: 0px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: left;
         }
     </style>
 </head>
@@ -449,6 +496,28 @@
     </div>
 
     <div class="footer-text">Engineered with high-precision Web Crypto API</div>
+    
+    <div class="info-box">
+      <h1 class="info-title-text">What is UUID?</h1>
+      <div class="line-holder"></div>
+      <p class="info-description-text">A <strong>UUID (Universally Unique Identifier)</strong> is <strong>a 128-bit number used to uniquely identify information or objects in computer systems</strong>. Because they are generated locally by applications using massive random numbers or timestamps, you never need a central authority to guarantee that your ID is entirely unique.</p>
+    </div>
+    
+    <div class="info-box">
+      <h1 class="info-title-text">How it Works?</h1>
+      <div class="line-holder"></div>
+      <p class="info-description-text">• <strong>Format:</strong> It is represented as a 36-character alphanumeric string (32 hex characters separated by hyphens in an 8-4-4-4-12 pattern).</p>
+      <p class="info-description-text">• <strong>The Odds of Duplication:</strong> A 128-bit number has roughly <strong>3.4 x 10³⁸</strong> possible combinations. The mathematical probability of two independent systems generating the exact same UUID is practically zero.</p>
+      <p class="info-description-text">• <strong>No Central Coordination:</strong> You and another developer across the globe could independently generate UUIDs at the exact same time without communicating, and your IDs will still be distinct.</p>
+    </div>
+    
+    <div class="info-box">
+      <h1 class="info-title-text">Why development use them?</h1>
+      <div class="line-holder"></div>
+      <p class="info-description-text">• <strong>Distributed Systems:</strong> Perfect for applications operating across multiple servers where assigning traditional sequential IDs (like 1, 2, 3) requires a central server to coordinate traffic.</p>
+      <p class="info-description-text">• <strong>Security & Privacy:</strong> Sequential IDs in URLs (e.g., ://website.com) allow malicious actors to guess your data volume or other users' IDs. UUIDs are completely unpredictable.</p>
+      <p class="info-description-text">• <strong>Merging Databases:</strong> If you merge two completely different databases into one, you don't have to worry about clashing or overlapping primary keys.</p>
+    </div>
 
     <script>
         /* --- LOGIKA UTAMA JAVASCRIPT --- */

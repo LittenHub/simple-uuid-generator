@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UUID v4 Generator</title>
+    <title>Simple UUID Generator</title>
     <style>
         /* --- GAYA DASAR & WARNA --- */
         body {
-            background-color: #030619; 
+            background-color: #070a13; 
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
@@ -20,20 +20,17 @@
             box-sizing: border-box;
         }
 
-        /* Badge paling atas */
         .top-badge {
-            background-color: #091023;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 6px 16px;
-            border-radius: 10px;
+            border-radius: 20px;
             font-size: 12px;
             color: #94a3b8;
-            box-shadow: 0 0px 40px rgba(80, 80, 80, 0.4);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 6px;
-            animation: fadeIn 1.0s ease forwards;
         }
 
         h1 {
@@ -41,35 +38,35 @@
             font-weight: 700;
             margin: 0 0 10px 0;
             text-align: center;
-            animation: fadeInDown 1.5s ease forwards;
+            animation: fadeInDown 2.5s ease forwards;
         }
 
         .subtitle {
             color: #64748b;
             font-size: 14px;
             text-align: center;
-            max-width: 340px;
+            max-width: 540px;
             margin: 0 0 30px 0;
             line-height: 1.4;
-            animation: fadeInUp 2.0s ease forwards;
+            animation: fadeInUp 3.0s ease forwards;
         }
 
         /* Kotak Utama / Card */
         .container {
-            background-color: #070E21;
+            background-color: #0f1422;
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 24px;
             border-radius: 16px;
             width: 100%;
-            max-width: 550px;
-            box-shadow: 0 20px 40px rgba(60, 60, 60, 0.6);
+            max-width: 600px;
+            box-shadow: 0 20px 40px rgba(60, 60, 60, 0.5);
             box-sizing: border-box;
-            animation: fadeIn 0.5s ease forwards;
+            animation: fadeIn 1.0s ease forwards;
         }
 
-        /* Group Input Jumlah */
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            position: relative; /* Penting untuk pembatas absolute menu dropdown */
         }
 
         .input-label-row {
@@ -91,31 +88,145 @@
             color: #475569;
         }
 
-        input[type="number"] {
+        /* --- DESAIN CUSTOM DROPDOWN UI --- */
+        .custom-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        /* Tombol Utama Utama Dropdown */
+        .dropdown-trigger {
             width: 100%;
             padding: 12px 16px;
             background-color: #070a13;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             color: #ffffff;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 500;
+            box-sizing: border-box;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.2s, background-color 0.2s;
+            user-select: none;
+            animation: fadeInUp 1.2s ease forwards;
+        }
+
+        .dropdown-trigger:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        /* Ikon panah dropdown */
+        .dropdown-trigger .arrow-icon {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #64748b;
+        }
+
+        /* Efek panah berputar saat dropdown terbuka */
+        .custom-dropdown.open .dropdown-trigger .arrow-icon {
+            transform: rotate(180deg);
+            color: #ffffff;
+        }
+
+        /* Kotak Menu Pilihan Melayang */
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            width: 100%;
+            background-color: #0f1422;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 6px;
+            box-sizing: border-box;
+            z-index: 100; /* Memastikan melayang di atas segalanya */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+            
+            /* Sifat animasi transisi pop-up rahasia */
+            opacity: 0;
+            transform: translateY(-8px) scale(0.97);
+            pointer-events: none;
+            transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Pemicu tampilkan menu */
+        .custom-dropdown.open .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* Baris opsi pilihan di dalam menu */
+        .dropdown-item {
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #94a3b8;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+            color: #ffffff;
+        }
+
+        /* Gaya item jika sedang aktif terpilih */
+        .dropdown-item.active {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* --- SISA INPUT STYLE --- */
+        #dynamic-input-container {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease, opacity 0.2s ease, margin-bottom 0.2s ease;
+        }
+
+        #dynamic-input-container.show {
+            max-height: 100px;
+            opacity: 1;
+            margin-bottom: 16px;
+        }
+
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #070a13;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 15px;
             font-weight: 500;
             box-sizing: border-box;
             outline: none;
             transition: border-color 0.2s;
+            animation: fadeInUp 1.4s ease forwards;
+        }
+        
+        input[type="number"]:focus, input[type="text"]:focus {
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* --- JENDELA EDITOR (STYLE MACOS) --- */
+        /* --- JENDELA EDITOR --- */
         .editor-box {
             background-color: #070a13;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             overflow: hidden;
             margin-bottom: 20px;
+            margin-top: 20px;
+            animation: fadeInUp 1.6s ease forwards;
         }
 
         .editor-header {
-            background-color: #131A2C;
+            background-color: rgba(255, 255, 255, 0.02);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             padding: 10px 14px;
             display: flex;
@@ -123,16 +234,8 @@
             align-items: center;
         }
 
-        .mac-dots {
-            display: flex;
-            gap: 6px;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
+        .mac-dots { display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
         .dot.red { background-color: #ef4444; }
         .dot.yellow { background-color: #f59e0b; }
         .dot.green { background-color: #10b981; }
@@ -141,6 +244,7 @@
             font-size: 12px;
             color: #64748b;
             font-family: monospace;
+            font-weight: 600;
         }
 
         .copy-all-btn {
@@ -161,71 +265,48 @@
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* Container tempat UUID */
         #output-container {
-            min-height: 160px; /* Menjaga tinggi kotak saat kosong/awal dibuka */
+            min-height: 160px;
             max-height: 240px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
         }
 
-        /* Gaya untuk Teks Placeholder di Tengah (FITUR BARU) */
         .placeholder-text {
-            margin: auto; /* Trik Flexbox sakti untuk membuat elemen tepat di tengah */
+            margin: auto;
             color: #475569;
             font-size: 14px;
             text-align: center;
             font-family: sans-serif;
             letter-spacing: 0.3px;
-            animation: fadeIn 1.5s ease forwards;
+            animation: fadeIn 2.2s ease forwards;
         }
+        .placeholder-text strong { color: #94a3b8; font-weight: 600; }
 
-        .placeholder-text strong {
-            color: #94a3b8;
-            font-weight: 600;
-        }
-
-        /* Kustomisasi Scrollbar */
         #output-container::-webkit-scrollbar { width: 4px; }
         #output-container::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px); /* Muncul sedikit dari bawah */
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-12px); /* Muncul sedikit dari bawah */
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
 
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
 
-        /* Baris UUID ketika muncul */
         .uuid-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 8px 14px;
             gap: 10px;
-            
-            opacity: 0; /* Mulai dari transparan sebelum animasi jalan */
+            opacity: 0;
             animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
@@ -247,7 +328,6 @@
             flex-grow: 1;
         }
 
-        /* Tombol Copy per baris */
         .copy-row-btn {
             background-color: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -262,17 +342,21 @@
             flex-shrink: 0;
             transition: all 0.2s ease;
         }
-
         .copy-row-btn:hover {
             color: #ffffff;
             background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .copy-row-btn.copied {
+            color: #10b981 !important;
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            border-color: rgba(16, 185, 129, 0.2) !important;
         }
 
-        /* --- TOMBOL UTAMA GENERATE (PUTIH CERAH) --- */
         #generate-btn {
             width: 100%;
             padding: 14px;
-            background-color: #E1E8F0; 
+            background-color: #f1f5f9; 
             color: #0f172a; 
             border: none;
             border-radius: 10px;
@@ -280,23 +364,17 @@
             font-weight: 600;
             cursor: pointer;
             display: flex;
+            box-shadow: 0 0px 10px rgba(70, 180, 180, 0.5);
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            transition: transform 0.3s ease, background-color 0.2s ease;
         }
+        #generate-btn:hover { background-color: #ffffff; }
+        #generate-btn:active { transform: scale(0.98); }
 
-        #generate-btn:hover {
-            background-color: #ffffff;
-        }
-        
-        #generate-btn:active {
-            transform: scale(0.98); 
-        }
-
-        /* Footer bawah */
         .footer-text {
-            margin-top: 25px;
+            margin-top: 80px;
             font-size: 12px;
             font-family: monospace;
             color: #334155;
@@ -305,11 +383,37 @@
     </style>
 </head>
 <body>
-    <h1>UUID v4 Generator</h1>
-    <p class="subtitle">Generate random RFC 4122 v4 UUIDs and copy them in one click.</p>
+    <h1>Simple UUID Generator</h1>
+    <p class="subtitle">Multi-version generator tangguh untuk segala kebutuhan arsitektur data Anda.</p>
 
     <div class="container">
         
+        <div class="input-group">
+            <div class="input-label-row">
+                <span class="input-label">VERSI UUID</span>
+            </div>
+            
+            <div class="custom-dropdown" id="custom-dropdown">
+                <div class="dropdown-trigger" id="dropdown-trigger">
+                    <span id="selected-text">UUID v4 (Acak Enkripsi Murni)</span>
+                    <svg class="arrow-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu">
+                    <div class="dropdown-item active" data-value="v4">UUID v4 (Acak Enkripsi Murni)</div>
+                    <div class="dropdown-item" data-value="v7">UUID v7 (Waktu Unix + Acak Modern)</div>
+                    <div class="dropdown-item" data-value="v5">UUID v5 (Berbasis Teks - SHA-1)</div>
+                    <div class="dropdown-item" data-value="v1">UUID v1 (Berbasis Waktu & Komputer)</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dynamic-input-container">
+            <div class="input-label-row">
+                <span class="input-label">TEKS BAHAN DASAR (INPUT STRINGS)</span>
+            </div>
+            <input type="text" id="v5-string-input" value="koding-partner-indonesia" placeholder="Masukkan kata bebas/URL...">
+        </div>
+
         <div class="input-group">
             <div class="input-label-row">
                 <span class="input-label">JUMLAH UUID</span>
@@ -325,7 +429,7 @@
                     <span class="dot yellow"></span>
                     <span class="dot green"></span>
                 </div>
-                <div class="file-name">uuid-v4.txt</div>
+                <div class="file-name" id="file-name">uuid-v4.txt</div>
                 <button class="copy-all-btn" id="copy-all-btn">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                     Copy all
@@ -344,17 +448,66 @@
 
     </div>
 
-    <div class="footer-text">Built with crypto.randomUUID()</div>
+    <div class="footer-text">Engineered with high-precision Web Crypto API</div>
 
     <script>
-        /* --- LOGIKA JAVASCRIPT --- */
+        /* --- LOGIKA UTAMA JAVASCRIPT --- */
         const generateBtn = document.getElementById('generate-btn');
         const outputContainer = document.getElementById('output-container');
         const countInput = document.getElementById('count');
+        const dynamicInputContainer = document.getElementById('dynamic-input-container');
+        const v5StringInput = document.getElementById('v5-string-input');
+        const fileNameDiv = document.getElementById('file-name');
         const copyAllBtn = document.getElementById('copy-all-btn');
         
+        // Elemen Custom Dropdown baru
+        const dropdownWrapper = document.getElementById('custom-dropdown');
+        const dropdownTrigger = document.getElementById('dropdown-trigger');
+        const dropdownSelectedText = document.getElementById('selected-text');
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+
+        // Variabel penampung state versi terpilih (Secara default v4)
+        let selectedVersion = 'v4';
         let currentUUIDs = [];
 
+        /* LOGIKA JS UNTUK CUSTOM DROPDOWN */
+        // 1. Klik trigger untuk buka/tutup menu dropdown
+        dropdownTrigger.addEventListener('click', (e) => {
+            e.stopPropagation(); // Mencegah bentrokan event click document
+            dropdownWrapper.classList.toggle('open');
+        });
+
+        // 2. Aksi ketika salah satu item pilihan di dalam menu diklik
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Hapus class active dari item lama, lalu pasang ke item baru
+                document.querySelector('.dropdown-item.active').classList.remove('active');
+                this.classList.add('active');
+
+                // Ambil nilai versi dari atribut data-value HTML
+                selectedVersion = this.getAttribute('data-value');
+                dropdownSelectedText.textContent = this.textContent;
+                
+                // Perbarui nama file & kontrol form input v5
+                fileNameDiv.textContent = `uuid-${selectedVersion}.txt`;
+                if (selectedVersion === 'v5') {
+                    dynamicInputContainer.classList.add('show');
+                } else {
+                    dynamicInputContainer.classList.remove('show');
+                }
+
+                // Tutup menu kembali
+                dropdownWrapper.classList.remove('open');
+            });
+        });
+
+        // 3. Menutup dropdown secara otomatis jika pengguna mengklik tempat lain di layar luar dropdown
+        document.addEventListener('click', () => {
+            dropdownWrapper.classList.remove('open');
+        });
+
+
+        /* --- DAFTAR ALGORITMA GENERATOR GENERATE UUID --- */
         function generateUUIDv4() {
             if (typeof crypto !== 'undefined' && crypto.randomUUID) {
                 return crypto.randomUUID();
@@ -365,8 +518,60 @@
             });
         }
 
-        function renderUUIDs() {
-            // Menghapus isi container (termasuk teks placeholder awal)
+        function generateUUIDv7() {
+            const now = Date.now();
+            const ts = now.toString(16).padStart(12, '0');
+            const r1 = Math.floor(Math.random() * 0x1000).toString(16).padStart(3, '0');
+            const r2 = (Math.floor(Math.random() * 0x4000) + 0x8000).toString(16).padStart(4, '0');
+            const r3 = Math.floor(Math.random() * 0x1000000000000).toString(16).padStart(12, '0');
+            return `${ts.slice(0,8)}-${ts.slice(8,12)}-7${r1}-${r2}-${r3}`;
+        }
+
+        function generateUUIDv1() {
+            const now = Date.now();
+            const ts = now.toString(16).padStart(12, '0');
+            const p1 = ts.slice(4, 12);
+            const p2 = ts.slice(0, 4);
+            const p3 = '1' + Math.floor(Math.random() * 0x1000).toString(16).padStart(3, '0');
+            const p4 = (Math.floor(Math.random() * 0x4000) + 0x8000).toString(16).padStart(4, '0');
+            const p5 = Math.floor(Math.random() * 0x1000000000000).toString(16).padStart(12, '0');
+            return `${p1}-${p2}-${p3}-${p4}-${p5}`;
+        }
+
+        async function generateUUIDv5(name) {
+            const namespaceUUID = '6ba7b810-9dad-11d1-80b4-00c04fd430c8'; 
+            const hex = namespaceUUID.replace(/-/g, '');
+            const nsBytes = new Uint8Array(hex.length / 2);
+            for (let i = 0; i < nsBytes.length; i++) {
+                nsBytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+            }
+            const nameBytes = new TextEncoder().encode(name);
+            const combined = new Uint8Array(nsBytes.length + nameBytes.length);
+            combined.set(nsBytes);
+            combined.set(nameBytes, nsBytes.length);
+
+            const hashBuffer = await crypto.subtle.digest('SHA-1', combined);
+            const hashBytes = new Uint8Array(hashBuffer);
+            
+            hashBytes[6] = (hashBytes[6] & 0x0f) | 0x50;
+            hashBytes[8] = (hashBytes[8] & 0x3f) | 0x80;
+            
+            const hashHex = Array.from(hashBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+            return `${hashHex.substr(0,8)}-${hashHex.substr(8,4)}-${hashHex.substr(12,4)}-${hashHex.substr(16,4)}-${hashHex.substr(20,12)}`;
+        }
+
+        async function getUUIDbyVersion(version, index) {
+            if (version === 'v7') return generateUUIDv7();
+            if (version === 'v1') return generateUUIDv1();
+            if (version === 'v5') {
+                const baseText = v5StringInput.value || 'default';
+                return await generateUUIDv5(index === 0 ? baseText : `${baseText}-${index}`);
+            }
+            return generateUUIDv4(); 
+        }
+
+        /* --- FUNGSI UTAMA RENDER OUTPUT --- */
+        async function renderUUIDs() {
             outputContainer.innerHTML = '';
             currentUUIDs = [];
 
@@ -376,7 +581,7 @@
             countInput.value = count;
 
             for (let i = 0; i < count; i++) {
-                const newUUID = generateUUIDv4();
+                const newUUID = await getUUIDbyVersion(selectedVersion, i);
                 currentUUIDs.push(newUUID);
 
                 const row = document.createElement('div');
@@ -397,8 +602,10 @@
                 
                 copyBtn.onclick = function() {
                     navigator.clipboard.writeText(newUUID);
+                    this.classList.add('copied');
                     this.textContent = 'Copied!';
                     setTimeout(() => {
+                        this.classList.remove('copied');
                         this.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy`;
                     }, 1500);
                 };
@@ -410,12 +617,8 @@
             }
         }
 
-        // --- CATATAN: Fungsi renderUUIDs() di sini TIDAK dipanggil langsung agar halaman awal kosong ---
-
-        // Tombol generate diklik
         generateBtn.addEventListener('click', renderUUIDs);
 
-        // Fitur tombol Copy All
         copyAllBtn.addEventListener('click', function() {
             if (currentUUIDs.length === 0) return;
             const allText = currentUUIDs.join('\n');

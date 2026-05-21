@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple UUID Generator</title>
+    <title>Simple UUID/GUID Generator</title>
     <style>
         /* --- GAYA DASAR & WARNA --- */
         body {
@@ -394,6 +394,7 @@
         }
         
         .info-box {
+            opacity: 1;
             background-color: #0f1422;
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 10px;
@@ -403,8 +404,7 @@
             max-width: 800px;
             box-shadow: 0 20px 40px rgba(60, 60, 60, 0.1);
             box-sizing: border-box;
-            animation: fadeIn 1.0s ease forwards;
-            transition: transform 0.3s ease, border 0.1s ease, box-shadow 0.4s ease;
+            transition: transform 0.3s ease, border 0.1s ease, box-shadow 0.4s ease, opacity 0.3s ease;
         }
         .info-box:hover { 
           transform: scale(1.01);
@@ -427,10 +427,11 @@
             color: rgba(255, 255, 255, 0.8);
             text-align: left;
         }
+        
     </style>
 </head>
 <body>
-    <h1>Simple UUID Generator</h1>
+    <h1>Simple UUID/GUID Generator</h1>
     <p class="subtitle">A simple UUID generator for your data needs. Supports v1, v4, v5, v6, GUID, and v7.</p>
 
     <div class="container">
@@ -499,30 +500,58 @@
 
     <div class="footer-text">Engineered with high-precision Web Crypto API</div>
     
-    <div class="info-box">
-      <h1 class="info-title-text">What is UUID/GUID?</h1>
+    <div class="info-box", id="info-box0">
+      <h2 class="info-title-text">What is UUID/GUID?</h2>
       <div class="line-holder"></div>
       <p class="info-description-text">• <strong>UUID (Universally Unique Identifier)</strong> is <strong>a 128-bit number used to uniquely identify information or objects in computer systems</strong>. Because they are generated locally by applications using massive random numbers or timestamps, you never need a central authority to guarantee that your ID is entirely unique.</p>
-      <p class="info-description-text">• <strong>GUID stands for Globally Unique Identifier.</strong> It is <strong>a 128-bit reference number used in software and databases to uniquely identify information without needing a central authority to manage or assign the ID.</strong>.</p>
+      <p class="info-description-text">• <strong>GUID</strong> stands for <strong>Globally Unique Identifier.</strong> It is <strong>a 128-bit reference number</strong> used in <strong>software and databases</strong> to uniquely identify information without needing a central authority to manage or assign the ID.</p>
     </div>
     
-    <div class="info-box">
-      <h1 class="info-title-text">How it Works?</h1>
+    <div class="info-box", id="info-box1">
+      <h2 class="info-title-text">How it Works?</h2>
       <div class="line-holder"></div>
       <div class="info-description-text">• <strong>Format:</strong> It is represented as a 36-character alphanumeric string (32 hex characters separated by hyphens in an 8-4-4-4-12 pattern).</div>
       <p class="info-description-text">• <strong>The Odds of Duplication:</strong> A 128-bit number has roughly <strong>3.4 x 10³⁸</strong> possible combinations. The mathematical probability of two independent systems generating the exact same UUID is practically zero.</p>
       <p class="info-description-text">• <strong>No Central Coordination:</strong> You and another developer across the globe could independently generate UUIDs at the exact same time without communicating, and your IDs will still be distinct.</p>
     </div>
     
-    <div class="info-box">
-      <h1 class="info-title-text">Why developer use them?</h1>
+    <div class="info-box", id=info-box2>
+      <h2 class="info-title-text">Why developer use them?</h2>
       <div class="line-holder"></div>
       <p class="info-description-text">• <strong>Distributed Systems:</strong> Perfect for applications operating across multiple servers where assigning traditional sequential IDs (like 1, 2, 3) requires a central server to coordinate traffic.</p>
       <p class="info-description-text">• <strong>Security & Privacy:</strong> Sequential IDs in URLs (e.g., ://website.com) allow malicious actors to guess your data volume or other users' IDs. UUIDs are completely unpredictable.</p>
       <p class="info-description-text">• <strong>Merging Databases:</strong> If you merge two completely different databases into one, you don't have to worry about clashing or overlapping primary keys.</p>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/ScrollTrigger.min.js"></script>
+    
     <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+          gsap.registerPlugin(ScrollTrigger);
+          const targetElemen = document.querySelectorAll('.info-box');
+          
+          let boxId = "";
+          targetElemen.forEach((key, i) => {
+            boxId = `#info-box${i}`
+            gsap.from(boxId, {
+              opacity: 0,
+              y: 20,
+              duration: 0.15,
+              scrollTrigger: {
+                trigger: boxId, // Elemen yang akan trigger animasi
+                start: "top 99%", // Mulai saat top box mencapai 80% dari layar
+                end: "bottom 1%", // Berakhir saat top box mencapai 20% dari layar
+                markers: false, // Set true untuk melihat garis debugging
+                scrub: false, // Tidak di-scrub, animasi independent
+                toggleActions: "play reverse play reverse", // TAMBAHKAN BARIS INI
+              },
+            });
+          });
+          
+          window.addEventListener("load", () => ScrollTrigger.refresh());
+        });
+
         /* --- LOGIKA JAVASCRIPT --- */
         const generateBtn = document.getElementById('generate-btn');
         const outputContainer = document.getElementById('output-container');
@@ -724,6 +753,7 @@
                 this.innerHTML = originalText;
             }, 1500);
         });
+        
     </script>
 </body>
 </html>

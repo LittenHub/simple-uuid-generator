@@ -386,7 +386,7 @@
 
         .footer-text {
             margin-top: 80px;
-            margin-bottom: 20px;
+            margin-bottom: 120px;
             font-size: 12px;
             font-family: monospace;
             color: #334155;
@@ -404,7 +404,7 @@
             box-shadow: 0 20px 40px rgba(60, 60, 60, 0.1);
             box-sizing: border-box;
             animation: fadeIn 1.0s ease forwards;
-            transition: transform 0.3s ease, border 0.2s ease, box-shadow 0.4s ease;
+            transition: transform 0.3s ease, border 0.1s ease, box-shadow 0.4s ease;
         }
         .info-box:hover { 
           transform: scale(1.01);
@@ -431,7 +431,7 @@
 </head>
 <body>
     <h1>Simple UUID Generator</h1>
-    <p class="subtitle">A simple UUID generator for your data needs. Supports v1, v4, v5, and v7.</p>
+    <p class="subtitle">A simple UUID generator for your data needs. Supports v1, v4, v5, v6, GUID, and v7.</p>
 
     <div class="container">
         
@@ -448,8 +448,10 @@
                 <div class="dropdown-menu" id="dropdown-menu">
                     <div class="dropdown-item active" data-value="v4">UUID v4 (Pure Encryption Random)</div>
                     <div class="dropdown-item" data-value="v7">UUID v7 (Modern Unix + Random Time)</div>
+                    <div class="dropdown-item" data-value="v6">UUID v6 (Sequential Time / Sortable)</div>
                     <div class="dropdown-item" data-value="v5">UUID v5 (Text Based - SHA-1)</div>
                     <div class="dropdown-item" data-value="v1">UUID v1 (Time & Computer Based)</div>
+                    <div class="dropdown-item" data-value="guid">GUID (Microsoft Standart - UPPERCASE)</div>
                 </div>
             </div>
         </div>
@@ -498,15 +500,16 @@
     <div class="footer-text">Engineered with high-precision Web Crypto API</div>
     
     <div class="info-box">
-      <h1 class="info-title-text">What is UUID?</h1>
+      <h1 class="info-title-text">What is UUID/GUID?</h1>
       <div class="line-holder"></div>
-      <p class="info-description-text">A <strong>UUID (Universally Unique Identifier)</strong> is <strong>a 128-bit number used to uniquely identify information or objects in computer systems</strong>. Because they are generated locally by applications using massive random numbers or timestamps, you never need a central authority to guarantee that your ID is entirely unique.</p>
+      <p class="info-description-text">• <strong>UUID (Universally Unique Identifier)</strong> is <strong>a 128-bit number used to uniquely identify information or objects in computer systems</strong>. Because they are generated locally by applications using massive random numbers or timestamps, you never need a central authority to guarantee that your ID is entirely unique.</p>
+      <p class="info-description-text">• <strong>GUID stands for Globally Unique Identifier.</strong> It is <strong>a 128-bit reference number used in software and databases to uniquely identify information without needing a central authority to manage or assign the ID.</strong>.</p>
     </div>
     
     <div class="info-box">
       <h1 class="info-title-text">How it Works?</h1>
       <div class="line-holder"></div>
-      <p class="info-description-text">• <strong>Format:</strong> It is represented as a 36-character alphanumeric string (32 hex characters separated by hyphens in an 8-4-4-4-12 pattern).</p>
+      <div class="info-description-text">• <strong>Format:</strong> It is represented as a 36-character alphanumeric string (32 hex characters separated by hyphens in an 8-4-4-4-12 pattern).</div>
       <p class="info-description-text">• <strong>The Odds of Duplication:</strong> A 128-bit number has roughly <strong>3.4 x 10³⁸</strong> possible combinations. The mathematical probability of two independent systems generating the exact same UUID is practically zero.</p>
       <p class="info-description-text">• <strong>No Central Coordination:</strong> You and another developer across the globe could independently generate UUIDs at the exact same time without communicating, and your IDs will still be distinct.</p>
     </div>
@@ -520,7 +523,7 @@
     </div>
 
     <script>
-        /* --- LOGIKA UTAMA JAVASCRIPT --- */
+        /* --- LOGIKA JAVASCRIPT --- */
         const generateBtn = document.getElementById('generate-btn');
         const outputContainer = document.getElementById('output-container');
         const countInput = document.getElementById('count');
@@ -529,54 +532,46 @@
         const fileNameDiv = document.getElementById('file-name');
         const copyAllBtn = document.getElementById('copy-all-btn');
         
-        // Elemen Custom Dropdown baru
         const dropdownWrapper = document.getElementById('custom-dropdown');
         const dropdownTrigger = document.getElementById('dropdown-trigger');
         const dropdownSelectedText = document.getElementById('selected-text');
         const dropdownItems = document.querySelectorAll('.dropdown-item');
 
-        // Variabel penampung state versi terpilih (Secara default v4)
         let selectedVersion = 'v4';
         let currentUUIDs = [];
 
-        /* LOGIKA JS UNTUK CUSTOM DROPDOWN */
-        // 1. Klik trigger untuk buka/tutup menu dropdown
+        // Logika Pengendali Custom Dropdown
         dropdownTrigger.addEventListener('click', (e) => {
-            e.stopPropagation(); // Mencegah bentrokan event click document
+            e.stopPropagation();
             dropdownWrapper.classList.toggle('open');
         });
 
-        // 2. Aksi ketika salah satu item pilihan di dalam menu diklik
         dropdownItems.forEach(item => {
             item.addEventListener('click', function() {
-                // Hapus class active dari item lama, lalu pasang ke item baru
                 document.querySelector('.dropdown-item.active').classList.remove('active');
                 this.classList.add('active');
 
-                // Ambil nilai versi dari atribut data-value HTML
                 selectedVersion = this.getAttribute('data-value');
                 dropdownSelectedText.textContent = this.textContent;
                 
-                // Perbarui nama file & kontrol form input v5
                 fileNameDiv.textContent = `uuid-${selectedVersion}.txt`;
                 if (selectedVersion === 'v5') {
                     dynamicInputContainer.classList.add('show');
                 } else {
                     dynamicInputContainer.classList.remove('show');
                 }
-
-                // Tutup menu kembali
                 dropdownWrapper.classList.remove('open');
             });
         });
 
-        // 3. Menutup dropdown secara otomatis jika pengguna mengklik tempat lain di layar luar dropdown
         document.addEventListener('click', () => {
             dropdownWrapper.classList.remove('open');
         });
 
 
-        /* --- DAFTAR ALGORITMA GENERATOR GENERATE UUID --- */
+        /* --- FITUR LOGIKA GENERATOR ENGINE --- */
+        
+        // 1. UUID v4 Engine
         function generateUUIDv4() {
             if (typeof crypto !== 'undefined' && crypto.randomUUID) {
                 return crypto.randomUUID();
@@ -587,6 +582,7 @@
             });
         }
 
+        // 2. UUID v7 Engine
         function generateUUIDv7() {
             const now = Date.now();
             const ts = now.toString(16).padStart(12, '0');
@@ -596,6 +592,26 @@
             return `${ts.slice(0,8)}-${ts.slice(8,12)}-7${r1}-${r2}-${r3}`;
         }
 
+        // 3. BARU: UUID v6 Engine (Urutan Waktu Gregorian Terbalik / Sortable)
+        function generateUUIDv6() {
+            // Perhitungan waktu Gregorian sejak 15 Oktober 1582 menggunakan BigInt
+            const gregorianOffsetMs = 12219292800000n;
+            const nowMs = BigInt(Date.now());
+            const totalCount = (nowMs + gregorianOffsetMs) * 10000n; 
+            
+            const hexTime = totalCount.toString(16).padStart(15, '0');
+            
+            // Re-order susunan bit agar berurutan sesuai timeline waktu (v6 spec)
+            const timeHighMid = hexTime.slice(0, 12);
+            const timeLow = hexTime.slice(12, 15);
+            
+            const r1 = (Math.floor(Math.random() * 0x4000) + 0x8000).toString(16).padStart(4, '0');
+            const r2 = Math.floor(Math.random() * 0x1000000000000).toString(16).padStart(12, '0');
+            
+            return `${timeHighMid.slice(0,8)}-${timeHighMid.slice(8,12)}-6${timeLow}-${r1}-${r2}`;
+        }
+
+        // 4. UUID v1 Engine
         function generateUUIDv1() {
             const now = Date.now();
             const ts = now.toString(16).padStart(12, '0');
@@ -607,6 +623,7 @@
             return `${p1}-${p2}-${p3}-${p4}-${p5}`;
         }
 
+        // 5. UUID v5 Engine
         async function generateUUIDv5(name) {
             const namespaceUUID = '6ba7b810-9dad-11d1-80b4-00c04fd430c8'; 
             const hex = namespaceUUID.replace(/-/g, '');
@@ -629,9 +646,17 @@
             return `${hashHex.substr(0,8)}-${hashHex.substr(8,4)}-${hashHex.substr(12,4)}-${hashHex.substr(16,4)}-${hashHex.substr(20,12)}`;
         }
 
+        // 6. BARU: Microsoft GUID Engine (v4 dibalut UPPERCASE)
+        function generateGUID() {
+            return generateUUIDv4().toUpperCase();
+        }
+
+        // Pencari rute generator aktif
         async function getUUIDbyVersion(version, index) {
             if (version === 'v7') return generateUUIDv7();
+            if (version === 'v6') return generateUUIDv6();
             if (version === 'v1') return generateUUIDv1();
+            if (version === 'guid') return generateGUID();
             if (version === 'v5') {
                 const baseText = v5StringInput.value || 'default';
                 return await generateUUIDv5(index === 0 ? baseText : `${baseText}-${index}`);
@@ -639,7 +664,7 @@
             return generateUUIDv4(); 
         }
 
-        /* --- FUNGSI UTAMA RENDER OUTPUT --- */
+        /* --- FUNGSI RENDER OUTPUT KE LAYAR --- */
         async function renderUUIDs() {
             outputContainer.innerHTML = '';
             currentUUIDs = [];
